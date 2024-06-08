@@ -6,20 +6,20 @@ import (
 	"os"
 )
 
-var ServerConfig Config
+var ServerConfig SConfig
 
-type Config struct {
+type SConfig struct {
 	ServerPort string
 }
 
-func LoadConfig() {
-	err := godotenv.Load(".env")
+func LoadServerConfig() {
+	err := godotenv.Load("configs/.env")
 
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 
-	ServerConfig = Config{
+	ServerConfig = SConfig{
 		ServerPort: os.Getenv("SERVER_PORT"),
 	}
 }
