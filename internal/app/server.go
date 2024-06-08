@@ -1,21 +1,14 @@
 package app
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"hrms-auth-service/internal/config"
+	"hrms-auth-service/internal/configs"
 	"hrms-auth-service/internal/transport/routers"
 	"log"
 )
 
 func Run() {
-	db, err := config.ConnectDB()
-	if err != nil {
-		err = fmt.Errorf("failed to connect database: %w", err)
-	}
-	defer db.Close()
-
-	config.LoadServerConfig()
+	configs.LoadServerConfig()
 
 	app := fiber.New(fiber.Config{
 		Prefork:       true,
@@ -25,7 +18,7 @@ func Run() {
 		AppName:       "HRMS v0.0.1",
 	})
 
-	routers.Setup(app, db)
+	routers.Setup(app)
 
-	log.Fatal(app.Listen(config.ServerConfig.ServerPort))
+	log.Fatal(app.Listen(configs.ServerConfig.ServerPort))
 }

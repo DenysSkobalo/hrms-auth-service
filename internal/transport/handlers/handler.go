@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"github.com/gofiber/fiber/v2"
+	"hrms-auth-service/internal/database/repositories"
 )
 
 type IHandler interface {
@@ -13,9 +14,13 @@ type IHandler interface {
 }
 
 type Handler struct {
-	DB *sql.DB
+	DB             *sql.DB
+	UserRepository repositories.UserRepository
 }
 
-func NewHandler(db *sql.DB) *Handler {
-	return &Handler{DB: db}
+func NewHandler(db *sql.DB, userRepository repositories.UserRepository) *Handler {
+	return &Handler{
+		DB:             db,
+		UserRepository: userRepository,
+	}
 }

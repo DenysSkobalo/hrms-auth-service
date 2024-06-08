@@ -1,13 +1,18 @@
-package config
+package configs
 
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
+	"log"
 	"os"
 	"sync"
 )
 
-var once sync.Once
+var (
+	db   *sql.DB
+	once sync.Once
+)
 
 type DBConfig struct {
 	Host     string
@@ -20,6 +25,7 @@ type DBConfig struct {
 
 func loadDatabaseConfig() DBConfig {
 	return DBConfig{
+		Host:     os.Getenv("DB_HOST"),
 		Username: os.Getenv("DB_USERNAME"),
 		Password: os.Getenv("DB_PASSWORD"),
 		Port:     os.Getenv("DB_PORT"),
@@ -28,30 +34,23 @@ func loadDatabaseConfig() DBConfig {
 	}
 }
 
-func ConnectDB() (*sql.DB, error) {
-	var db *sql.DB
-	var err error
-
+func ConnectDB() *sql.DB {
 	once.Do(func() {
 		config := loadDatabaseConfig()
-		connStr := fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s sslmode=%s", config.Username, config.Password, config.Host, config.Port, config.DBName, config.SSLMode)
+		connStr := fmt.Sprintf("host=%s user=%s password=%s port=%s dbname=%s sslmode=%s",
+			config.Host, config.Username, config.Password, config.Port, config.DBName, config.SSLMode)
 
 		var err error
 		db, err = sql.Open("postgres", connStr)
 		if err != nil {
-			err = fmt.Errorf("failed to connect to database: %v", err)
-			return
+			log.Fatal(err)
 		}
 
 		err = db.Ping()
 		if err != nil {
-			err = fmt.Errorf("failed to ping database: %v", err)
-			db.Close()
-			db = nil
-			return
+			log.Fatal("Error connecting to database: ", err)
 		}
-
 	})
 
-	return db, err
+	return db
 }
