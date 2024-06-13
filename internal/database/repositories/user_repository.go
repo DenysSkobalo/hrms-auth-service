@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"hrms-auth-service/internal/database/utils"
 	"hrms-auth-service/internal/models"
+	pkgutils "hrms-auth-service/pkg/utils"
 )
 
 type IUserRepository interface {
 	CreateUser(user *models.User) error
+	Authenticate(email string, password string) (*models.User, error)
+
 	GetAllUsers() ([]models.User, error)
 
 	IsEmailExists(email string) bool
@@ -29,6 +32,22 @@ func (r *UserRepository) CreateUser(user *models.User) error {
 		return fmt.Errorf("failed to create user: %v", err)
 	}
 	return nil
+}
+
+func (r *UserRepository) Authenticate(email, password string) (*models.User, error) {
+	var user models.User
+	query := "SELECT id, email, password_hash FROM users WHERE email = $1"
+	row := r.DB.QueryRow(query, email)
+	err := row.Scan(&user.ID, &user.Email, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	if !pkgutils.CheckPasswordHash(password, user.Password) {
+		return nil, sql.ErrNoRows
+	}
+
+	return &user, nil
 }
 
 func (r *UserRepository) GetAllUsers() ([]models.User, error) {

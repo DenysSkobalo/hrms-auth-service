@@ -31,12 +31,10 @@ go.work
 # Logs
 *.log
 
-# Environment variables
-*.env
-
-# Configuration files
-/configs/.env
-
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Environment variables
+*.env
+
