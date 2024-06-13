@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/gofiber/fiber/v2"
 	"hrms-auth-service/internal/configs"
+	"hrms-auth-service/internal/transport/middlewares"
 	"hrms-auth-service/internal/transport/routers"
 	"log"
 )
@@ -17,6 +18,8 @@ func Run() {
 		ServerHeader:  "Fiber",
 		AppName:       "HRMS v0.0.1",
 	})
+
+	app.Use(middlewares.CORSMiddleware())
 
 	routers.Setup(app)
 
