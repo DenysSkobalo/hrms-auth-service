@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16.2
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tenyd
+      POSTGRES_DB: auth_service_db
+    volumes:
+      - ../../postgresql/volume/postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
