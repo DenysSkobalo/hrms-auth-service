@@ -1,11 +1,13 @@
 package app
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"fmt"
 	"hrms-auth-service/internal/configs"
 	"hrms-auth-service/internal/transport/middlewares"
 	"hrms-auth-service/internal/transport/routers"
 	"log"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func Run() {
@@ -22,6 +24,8 @@ func Run() {
 	app.Use(middlewares.CORSMiddleware())
 
 	routers.Setup(app)
-
-	log.Fatal(app.Listen(configs.ServerConfig.ServerPort))
+	
+	serverAddr := fmt.Sprintf(":%s", configs.ServerConfig.ServerPort)
+	
+	log.Fatal(app.Listen(serverAddr))
 }
